@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html;charset=UTF-8"/>
+</head>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="md5.js"></script>
+<script>
+    function submit() {
+        console.log("tijiao")
+        var name = $("input[name='name']").val()
+        var pay_type = $("input[name='pay_type']").val()
+        var price = $("input[name='price']").val()
+        var order_id = $("input[name='order_id']").val()
+        var order_uid = $("input[name='order_uid']").val()
+        var notify_url = $("input[name='notify_url']").val()
+        var return_url = $("input[name='return_url']").val()
+        var feedback_url = $("input[name='feedback_url']").val()
+        var secret = $("input[name='secret']").val()
+        var sign = hex_md5(name + pay_type + price + order_id + notify_url + return_url + feedback_url + secret)
+        $.ajax({
+
+            type: "POST",
+
+            url: "https://bufpay.com/api/pay/97102",
+
+            dataType: "jsonp",
+            contentType: "application/jsonp;charset=utf-8",
+
+            data: {
+                name: name,
+                pay_type: pay_type,
+                price: price,
+                order_id: order_id,
+                order_uid: order_uid ,
+                notify_url: notify_url,
+                return_url: return_url,
+                feedback_url: feedback_url,
+                secret: secret,
+                sign: sign
+            },
+
+            success: function (data, msg) {
+                alert(data)
+            }
+
+        });
+
+        console.log(sign)
+    }
+</script>
+<body>
+<h6>Thymeleaf 模板引擎</h6>
+    name<br>
+    <input name="name" value="product1"/><br>
+    pay_type<br>
+    <input name="pay_type" value="alipay"/><br>
+    price<br>
+    <input name="price" value="1"/><br>
+    order_id<br>
+    <input name="order_id" value="201906181702"/><br>
+    order_uid<br>
+    <input name="order_uid" value="user001"/><br>
+    notify_url<br>
+    <input name="notify_url" value="www.baidu.com"/><br>
+    return_url<br>
+    <input name="return_url" value="www.baidu.com"/><br>
+    feedback_url<br>
+    <input name="feedback_url" value=""/><br>
+    secret<br>
+    <input name="secret" value="a0e8f0bc942c44c3ac1f1d438830fa33"/><br>
+    <input name="sign" value=""/><br>
+    <button onclick="submit()"></button>
+</body>
+</html>
