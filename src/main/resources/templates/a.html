@@ -7,7 +7,6 @@
 <script type="text/javascript" src="md5.js"></script>
 <script>
     function submit() {
-        console.log("tijiao")
         var name = $("input[name='name']").val()
         var pay_type = $("input[name='pay_type']").val()
         var price = $("input[name='price']").val()
@@ -17,7 +16,7 @@
         var return_url = $("input[name='return_url']").val()
         var feedback_url = $("input[name='feedback_url']").val()
         var secret = $("input[name='secret']").val()
-        var sign = hex_md5(name + pay_type + price + order_id + notify_url + return_url + feedback_url + secret)
+        var sign = "1E35ABFE58C523219AE0831CD70F19FC"
         $.ajax({
 
             type: "POST",
@@ -41,13 +40,91 @@
             },
 
             success: function (data, msg) {
+                alert("111")
                 alert(data)
-            }
+            },
+            error: function (data, msg) {
+                alert("222")
+                alert(data)
+            },
 
         });
 
         console.log(sign)
     }
+
+    function crossDomainPost() {
+        // Add the iframe with a unique name
+        var iframe = document.createElement("iframe");
+        var uniqueString = "CHANGE_THIS_TO_SOME_UNIQUE_STRING";
+        document.body.appendChild(iframe);
+        iframe.style.display = "none";
+        iframe.contentWindow.name = uniqueString;
+
+        // construct a form with hidden inputs, targeting the iframe
+        var form = document.createElement("form");
+        form.target = uniqueString;
+        form.action = "https://bufpay.com/api/pay/97102";
+        form.method = "POST";
+
+        // repeat for each parameter
+        var name = document.createElement("input");
+        name.type = "hidden";
+        name.name = "name";
+        name.value = "product1";
+        form.appendChild(name);
+        var pay_type = document.createElement("input");
+        pay_type.type = "hidden";
+        pay_type.name = "pay_type";
+        pay_type.value = "alipay";
+        form.appendChild(pay_type);
+        var price = document.createElement("input");
+        price.type = "hidden";
+        price.name = "price";
+        price.value = "0";
+        form.appendChild(price);
+
+        var order_id = document.createElement("input");
+        order_id.type = "hidden";
+        order_id.name = "order_id";
+        order_id.value = "201906181702121";
+        form.appendChild(order_id);
+        var order_uid = document.createElement("input");
+        order_uid.type = "hidden";
+        order_uid.name = "order_uid";
+        order_uid.value = "user001";
+        form.appendChild(order_uid);
+        var notify_url = document.createElement("input");
+        notify_url.type = "hidden";
+        notify_url.name = "notify_url";
+        notify_url.value = "http://www.baidu.com";
+        form.appendChild(notify_url);
+        var return_url = document.createElement("input");
+        return_url.type = "hidden";
+        return_url.name = "return_url";
+        return_url.value = "http://www.baidu.com";
+        form.appendChild(return_url);
+        var feedback_url = document.createElement("input");
+        feedback_url.type = "hidden";
+        feedback_url.name = "feedback_url";
+        feedback_url.value = "";
+        form.appendChild(feedback_url);
+        var secret = document.createElement("input");
+        secret.type = "hidden";
+        secret.name = "secret";
+        secret.value = "a0e8f0bc942c44c3ac1f1d438830fa33";
+        form.appendChild(secret);
+        var sign = document.createElement("input");
+        sign.type = "hidden";
+        sign.name = "sign";
+        sign.value = "56C83F3FC5EDA6E53EE2CDDC692C1B1F";
+        form.appendChild(sign);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+
 </script>
 <body>
 <h6>Thymeleaf 模板引擎</h6>
@@ -56,19 +133,19 @@
     pay_type<br>
     <input name="pay_type" value="alipay"/><br>
     price<br>
-    <input name="price" value="1"/><br>
+    <input name="price" value="0"/><br>
     order_id<br>
-    <input name="order_id" value="201906181702"/><br>
+    <input name="order_id" value="1111111111111111"/><br>
     order_uid<br>
     <input name="order_uid" value="user001"/><br>
     notify_url<br>
-    <input name="notify_url" value="www.baidu.com"/><br>
+    <input name="notify_url" value="http://www.baidu.com"/><br>
     return_url<br>
-    <input name="return_url" value="www.baidu.com"/><br>
+    <input name="return_url" value="http://www.baidu.com"/><br>
     feedback_url<br>
     <input name="feedback_url" value=""/><br>
     secret<br>
     <input name="secret" value="a0e8f0bc942c44c3ac1f1d438830fa33"/><br>
-    <button onclick="submit()"></button>
+    <button onclick="submit()">提交</button>
 </body>
 </html>
