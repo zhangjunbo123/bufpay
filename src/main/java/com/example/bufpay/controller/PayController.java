@@ -32,22 +32,18 @@ import java.util.List;
 @RestController
 public class PayController {
 
-    static String url = "https://bufpay.com/api/pay/97180";
-    static String name = "product1";
-    static String pay_type = "alipay";
-    static String order_uid = "user001" + "time:" + System.currentTimeMillis();
-    static String notify_url = "http://test.zpkoo.com/api/wise-wises/rs/client/Index/index?_t=1561105461848";
-    static String return_url = "http://www.baidu.com";
-    static String feedback_url = "";
-    static String secret = "c7f0aafac7f64bcea98d634c60fcfb6f";
-    static String order_id = System.currentTimeMillis() + "";
-
+    /**
+     * @Author sonny
+     * @Description 发起付款请求
+     * @Date 2019/6/21 20:03
+     **/
     @RequestMapping(value = "/pay", method = RequestMethod.GET)
     public String pay(
-            @RequestParam(required = false) Double money
+            @RequestParam(required = false, defaultValue = "") Double money,
+            @RequestParam(required = false, defaultValue = "") String url
     ) {
         try {
-            String result = doHttpsPostTest(money);
+            String result = doHttpsPostTest(money, url);
             return result;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -89,7 +85,7 @@ public class PayController {
      * @throws UnsupportedEncodingException
      * @date 2018年9月8日 下午2:12:50
      */
-    public String doHttpsPostTest(Double money) throws UnsupportedEncodingException {
+    public String doHttpsPostTest(Double money, String url) throws UnsupportedEncodingException {
         System.out.println("doHttpsPostTest...");
         // -------------------------------> 获取Rest客户端实例
         RestTemplate restTemplate = new RestTemplate(new HttpsClientRequestFactory());
@@ -116,19 +112,30 @@ public class PayController {
         //将请求头部和参数合成一个请求
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
+        String url2 = "https://bufpay.com/api/pay/97204";
+        String name = "product1";
+        String pay_type = "alipay";
+        String order_uid = "user001" + "time:" + System.currentTimeMillis();
+        String notify_url = "http://test.zpkoo.com/api/wise-wises/rs/client/Index/index?_t=1561105461848";
+        String return_url = "http://www.baidu.com";
+        String feedback_url = "";
+        String secret = "2aa352ccbfea4c81a0f1e8daa2e84b5e";
+        String order_id = System.currentTimeMillis() + "";
+
         String price = money.toString();
         params.add("name", name);
         params.add("pay_type", "alipay");
         params.add("price", price);
+        System.out.println("price" + price);
         params.add("order_uid", order_uid);
+        System.out.println("order_uid" + order_uid);
         params.add("notify_url", notify_url);
-        if (money != 0.01d) {
-            return_url = "http://localhost:8089/error";
-        }
+        return_url = url;
         params.add("return_url", return_url);
         params.add("feedback_url", feedback_url);
         params.add("secret", secret);
         params.add("order_id", order_id);
+        System.out.println("order_id" + order_id);
 
         String sign = MD5Utils.MD5Encode(name + pay_type + price + order_id + order_uid + notify_url + return_url + feedback_url + secret, null);
         params.add("sign", sign);
@@ -137,7 +144,7 @@ public class PayController {
 //        HttpEntity<String> httpEntity = new HttpEntity<String>(httpBody, httpHeaders);
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, httpHeaders);
         // -------------------------------> URI
-        StringBuffer paramsURL = new StringBuffer(url);
+        StringBuffer paramsURL = new StringBuffer(url2);
         // 字符数据最好encoding一下;这样一来，某些特殊字符才能传过去(如:flag的参数值就是“&”,不encoding的话,传不过去)
         paramsURL.append("?flag=" + URLEncoder.encode("&", "utf-8"));
         URI uri = URI.create(paramsURL.toString());
@@ -149,23 +156,18 @@ public class PayController {
 
         // -------------------------------> 响应信息
         //响应码,如:401、302、404、500、200等
-        System.err.println(response.getStatusCodeValue());
+//        System.err.println(response.getStatusCodeValue());
         Gson gson = new Gson();
         // 响应头
-        System.err.println(gson.toJson(response.getHeaders()));
+//        System.err.println(gson.toJson(response.getHeaders()));
         // 响应体
         if (response.hasBody()) {
-            System.err.println(response.getBody());
+//            System.err.println(response.getBody());
             return response.getBody();
         }
         return "";
 
     }
-
-
-
-
-
 
 
     public String postRequest(String urlAddress, String args, int timeOut) throws Exception {
