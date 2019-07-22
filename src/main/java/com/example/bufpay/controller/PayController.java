@@ -14,6 +14,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -40,10 +41,11 @@ public class PayController {
     @RequestMapping(value = "/pay", method = RequestMethod.GET)
     public String pay(
             @RequestParam(required = false, defaultValue = "") Double money,
-            @RequestParam(required = false, defaultValue = "") String url
-    ) {
+            @RequestParam(required = false, defaultValue = "") String url,
+            HttpServletRequest request
+            ) {
         try {
-            String result = doHttpsPostTest(money, url);
+            String result = doHttpsPostTest(money, url, request);
             return result;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -85,7 +87,7 @@ public class PayController {
      * @throws UnsupportedEncodingException
      * @date 2018年9月8日 下午2:12:50
      */
-    public String doHttpsPostTest(Double money, String url) throws UnsupportedEncodingException {
+    public String doHttpsPostTest(Double money, String url, HttpServletRequest request) throws UnsupportedEncodingException {
         System.out.println("doHttpsPostTest...");
         // -------------------------------> 获取Rest客户端实例
         RestTemplate restTemplate = new RestTemplate(new HttpsClientRequestFactory());
@@ -112,30 +114,31 @@ public class PayController {
         //将请求头部和参数合成一个请求
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
-        String url2 = "https://bufpay.com/api/pay/97204";
-        String name = "product1";
-        String pay_type = "alipay";
-        String order_uid = "user001" + "time:" + System.currentTimeMillis();
+        String url2 = "https://bufpay.com/api/pay/97790?user_cache=true";
+        String name = "咖啡资料";
+        String pay_type = "wechat";
+        String order_uid = "ip:" + request.getRemoteAddr();
+        System.out.println("order_uid:" + order_uid);
         String notify_url = "http://test.zpkoo.com/api/wise-wises/rs/client/Index/index?_t=1561105461848";
         String return_url = "http://www.baidu.com";
         String feedback_url = "";
-        String secret = "2aa352ccbfea4c81a0f1e8daa2e84b5e";
+        String secret = "fb4e1c5b1f70475bb90c500e65b7ed52";
         String order_id = System.currentTimeMillis() + "";
 
-        String price = money.toString();
+        String price = "27";
         params.add("name", name);
-        params.add("pay_type", "alipay");
+        params.add("pay_type", pay_type);
         params.add("price", price);
-        System.out.println("price" + price);
+        System.out.println("price:" + price);
         params.add("order_uid", order_uid);
-        System.out.println("order_uid" + order_uid);
+        System.out.println("order_uid:" + order_uid);
         params.add("notify_url", notify_url);
-        return_url = url;
+        return_url = "http://aopsy-consult.mikecrm.com/blO2xtz";
         params.add("return_url", return_url);
         params.add("feedback_url", feedback_url);
         params.add("secret", secret);
         params.add("order_id", order_id);
-        System.out.println("order_id" + order_id);
+        System.out.println("order_id:" + order_id);
 
         String sign = MD5Utils.MD5Encode(name + pay_type + price + order_id + order_uid + notify_url + return_url + feedback_url + secret, null);
         params.add("sign", sign);
